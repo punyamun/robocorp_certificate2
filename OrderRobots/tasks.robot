@@ -9,6 +9,8 @@ Library           RPA.HTTP
 Library           RPA.Excel.Files
 Library           RPA.PDF
 Library           RPA.Tables
+Library           RPA.Robocloud.Secrets
+Library           RPA.Dialogs
 #Library           XML
 
 *** Variables ***
@@ -16,13 +18,23 @@ Library           RPA.Tables
 
 *** Keywords ***
 Open the robot order website
-    Open Available Browser    https://robotsparebinindustries.com/#/robot-order
+    ${website}=    Get Secret        navigateurl
+    Log    ${website}
+    Open Available Browser        ${website}[url]
     Click Button              OK
+    Maximize Browser Window
 
+*** Keywords ***
+Get user input for order file
+    Create Form    orders.csv URL
+    Add Text Input    URL    url
+    &{response}    Request Response
+    [Return]    ${response["url"]}
 
 *** Keywords ***
 Download The CSV file
-    Download    https://robotsparebinindustries.com/orders.csv    overwrite=True
+    ${csv_url}=        Get user input for order file
+    Download        ${csv_url}        overwrite=True
 
 
 *** Keywords ***
